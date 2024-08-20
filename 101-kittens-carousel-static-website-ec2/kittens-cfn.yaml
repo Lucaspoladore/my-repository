@@ -10,7 +10,7 @@ Resources:
   rSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: KittensSecGroup
+      GroupName: KittensSecGroup2
       GroupDescription: Allow SSH and HTTP # Required
       SecurityGroupIngress: 
         - IpProtocol: tcp
@@ -33,7 +33,7 @@ Resources:
           Value: altaz-carousel-webserver
       ImageId: ami-066784287e358dad1
       InstanceType: t2.micro
-      KeyName: ec2-shh-key
+      KeyName: ec2-ssh-key
       SecurityGroupIds: 
         - !GetAtt rSecurityGroup.GroupId
       UserData: "String"
