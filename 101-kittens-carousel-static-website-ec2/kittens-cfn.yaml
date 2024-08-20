@@ -10,7 +10,7 @@ Resources:
   rSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: KittensSecGroup2
+      GroupName: KittensSecGroup
       GroupDescription: Allow SSH and HTTP # Required
       SecurityGroupIngress: 
         - IpProtocol: tcp
@@ -22,18 +22,38 @@ Resources:
           ToPort: 80
           CidrIp: 0.0.0.0/0
 
-  
-# Outputs:
-
   rWebServer:
     Type: AWS::EC2::Instance
     Properties:
       Tags: 
         - Key: Name
-          Value: altaz-carousel-webserver
+          Value: spoladore-carousel-webserver
       ImageId: ami-066784287e358dad1
       InstanceType: t2.micro
       KeyName: ec2-ssh-key
       SecurityGroupIds: 
         - !GetAtt rSecurityGroup.GroupId
-      UserData: "String"
+      UserData:
+        Fn::Base64:
+          |
+            #! /bin/bash -x
+
+            yum update -y
+            yum install httpd -y
+
+            cd /var/www/html
+
+            FOLDER=https://raw.githubusercontent.com/lucaspoladore/my-repository/main/101-kittens-carousel-static-website-ec2/static-web
+            wget ${FOLDER}/index.html
+            wget ${FOLDER}/cat0.jpg
+            wget ${FOLDER}/cat1.jpg
+            wget ${FOLDER}/cat2.jpg
+
+            systemctl start httpd
+            systemctl enable httpd
+
+Outputs:
+
+ WebURL:
+    Description: URL for website
+    Value: !Join [ "", ["http://", !GetAtt rWebServer.PublicDnsName ] ]
